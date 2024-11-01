@@ -7,19 +7,13 @@ I'm sharing this interrupter for inspiration if you want to build your own. You 
 <img src="https://czechrust.eu/other/electro/staccato_circuit.png" width=50% height=50%><img src="https://czechrust.eu/other/electro/staccato_pcb.png" width=50% height=50%>
 
 YouTube #1</br>
-[![Video](http://img.youtube.com/vi/uaf3k1Z0Gr8/0.jpg)]([https://www.youtube.com/watch?v=uaf3k1Z0Gr8])
+[![Video1](https://img.youtube.com/vi/uaf3k1Z0Gr8/0.jpg)](https://www.youtube.com/watch?v=uaf3k1Z0Gr8)
 
 YouTube #2</br>
-[![Video](http://img.youtube.com/vi/Orlu5OpqwGU/0.jpg)]([https://www.youtube.com/watch?v=Orlu5OpqwGU])
+[![Video2](https://img.youtube.com/vi/Orlu5OpqwGU/0.jpg)](https://www.youtube.com/watch?v=Orlu5OpqwGU)
 
 YouTube #3</br>
-[![Video](http://img.youtube.com/vi/_JIQWXnwYew/0.jpg)]([https://www.youtube.com/watch?v=_JIQWXnwYew])
+[![Video3](https://img.youtube.com/vi/_JIQWXnwYew/0.jpg)](https://www.youtube.com/watch?v=_JIQWXnwYew)
 
 YouTube #4</br>
-[![Video](http://img.youtube.com/vi/DjzjCPVujho/0.jpg)]([https://www.youtube.com/watch?v=DjzjCPVujho])
-
-
-</br>https://www.youtube.com/watch?v=uaf3k1Z0Gr8
-</br>https://www.youtube.com/watch?v=Orlu5OpqwGU
-</br>https://www.youtube.com/watch?v=_JIQWXnwYew
-</br>https://www.youtube.com/watch?v=DjzjCPVujho
+[![Video4](https://img.youtube.com/vi/DjzjCPVujho/0.jpg)](https://www.youtube.com/watch?v=DjzjCPVujho)
