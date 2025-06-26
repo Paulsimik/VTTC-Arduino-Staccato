@@ -1,17 +1,19 @@
 //#############################
 // VTTC Staccato
-// Version 1.0.1
+// Version 1.2
 // By Paul Simik
 //#############################
 
-// 1.0.0
-// - Program release
+//  1.0
+//  - Program release
 //
-// 1.0.1
-// - Added option pulse delay for Standart mode - pot2
-// - Added Falling ARSG Mode
-// - Added Bidirectional ARSG Mode
-// - Small fixes
+//  1.1
+//  - Added option pulse delay for Standart mode - pot2
+//  - Added Falling ARSG Mode
+//  - Added Bidirectional ARSG Mode
+//  - Small fixes
+//  1.2
+//  - Optimalizing
 
 #include <Arduino.h>
 
@@ -25,6 +27,17 @@
 #define BTN_2 6
 #define BTN_3 7
 #define BTN_4 8
+
+enum modeType
+{
+  MODE_STANDART,
+  MODE_BURST,
+  MODE_RISING,
+  MODE_FALLING,
+  MODE_BIDIRECTIONAL
+};
+
+enum modeType currMode = MODE_STANDART;
 
 int pot1 = 0;
 int pot2 = 0;
@@ -43,104 +56,52 @@ int z = 0;
 bool pulse = false;
 bool rising = true;
 
-void Output(void);
-void FallingARSGMode(void);
-void RisingARSGMode(void);
-void ARSGMode(void);
-void BurstMode(void);
-void StandartMode(void);
+void Output();
+void FallingMode();
+void FallingControl();
+void RisingMode();
+void RisingControl();
+void BidirectionalMode();
+void BidirectionalControl();
+void BurstMode();
+void BurstControl();
+void StandartMode();
+void StandartControl();
 void SetOutput(bool output);
+void SetupPins();
+int SelectMode();
 
 void setup() 
 {
-  pinMode(OUTPUT_PIN, OUTPUT);
-  pinMode(OUTPUT_LED, OUTPUT);
-  pinMode(INPUT_PIN, INPUT);
-  pinMode(POT_1, INPUT);
-  pinMode(POT_2, INPUT);
-  pinMode(POT_3, INPUT);
-  pinMode(BTN_1, INPUT);
-  pinMode(BTN_2, INPUT);
-  pinMode(BTN_3, INPUT);
-  pinMode(BTN_4, INPUT);
-
+  SetupPins();
   attachInterrupt(digitalPinToInterrupt(INPUT_PIN), Output, RISING);
 }
 
 void loop() 
 {
-  btn_1 = digitalRead(BTN_1);
-  btn_2 = digitalRead(BTN_2);
-  btn_3 = digitalRead(BTN_3);
-  btn_4 = digitalRead(BTN_4);
-
-  if(btn_1) // Bidirectional ARSG
+  switch (SelectMode())
   {
-    pot1 = map(analogRead(POT_1), 0, 1023, 2, 8); // Frequency
-    pot2 = map(analogRead(POT_2), 0, 1023, 500, 50); // Rising steps
-    pot3 = map(analogRead(POT_3), 0, 1023, 9000, 30000); // Delay next start
-    return;
+    case MODE_BIDIRECTIONAL:  currMode = MODE_BIDIRECTIONAL;    BidirectionalControl(); break;
+    case MODE_FALLING:        currMode = MODE_FALLING;          FallingControl();       break;
+    case MODE_RISING:         currMode = MODE_RISING;           RisingControl();        break;
+    case MODE_BURST:          currMode = MODE_BURST;            BurstControl();         break;
+    case MODE_STANDART:       currMode = MODE_STANDART;         StandartControl();      break;
   }
-
-  if(btn_2) // Rising ARSG
-  {
-    pot1 = map(analogRead(POT_1), 0, 1023, 2, 8); // Frequency
-    pot2 = map(analogRead(POT_2), 0, 1023, 500, 50); // Falling steps
-    pot3 = map(analogRead(POT_3), 0, 1023, 200, 20000); // Delay next start
-    return;
-  }
-
-  if(btn_3) // Falling ARSG
-  {
-    pot1 = map(analogRead(POT_1), 0, 1023, 2, 8); // Frequency
-    pot2 = map(analogRead(POT_2), 0, 1023, 500, 50); // Rising steps
-    pot3 = map(analogRead(POT_3), 0, 1023, 9000, 20000); // Delay next start
-    return;
-  }
-
-  if(btn_4) // Burst
-  {
-    pot1 = map(analogRead(POT_1), 0, 1023, 20, 2); // Pulse count
-    pot2 = map(analogRead(POT_2), 0, 1023, 2, 10); // Pulse skip
-    pot3 = map(analogRead(POT_3), 0, 1023, 10, 100);  // Pulse delay
-    return;
-  }
-
-  // Standart
-  pot1 = map(analogRead(POT_1), 0, 1023, 2, 100); // Standart Mode pulse skip
-  pot2 = map(analogRead(POT_2), 0, 1023, 0, 9700); // Start pulse delay
 }
 
 void Output()
 {
-  if(btn_1)
+  switch (currMode)
   {
-    ARSGMode();
-    return;
+    case MODE_BIDIRECTIONAL:  BidirectionalMode();  break;
+    case MODE_FALLING:        FallingMode();        break;
+    case MODE_RISING:         RisingMode();         break;
+    case MODE_BURST:          BurstMode();          break;
+    case MODE_STANDART:       StandartMode();       break;
   }
-  
-  if(btn_2)
-  {
-    RisingARSGMode();
-    return;
-  }
-
-  if(btn_3)
-  {
-    FallingARSGMode();
-    return;
-  }
-
-  if(btn_4)
-  {
-    BurstMode();
-    return;
-  }
-
-  StandartMode();
 }
 
-void FallingARSGMode()
+void FallingMode()
 {
   x++;
   if(x >= pot1)
@@ -163,7 +124,14 @@ void FallingARSGMode()
   }
 }
 
-void RisingARSGMode()
+void FallingControl()
+{
+  pot1 = map(analogRead(POT_1), 0, 1023, 2, 8); // Frequency
+  pot2 = map(analogRead(POT_2), 0, 1023, 500, 50); // Rising steps
+  pot3 = map(analogRead(POT_3), 0, 1023, 9000, 20000); // Delay next start
+}
+
+void RisingMode()
 {
   x++;
   if(x >= pot1)
@@ -186,7 +154,14 @@ void RisingARSGMode()
   }
 }
 
-void ARSGMode()
+void RisingControl()
+{
+  pot1 = map(analogRead(POT_1), 0, 1023, 2, 8); // Frequency
+  pot2 = map(analogRead(POT_2), 0, 1023, 500, 50); // Falling steps
+  pot3 = map(analogRead(POT_3), 0, 1023, 200, 20000); // Delay next start
+}
+
+void BidirectionalMode()
 {
   x++;
   if(x >= pot1)
@@ -232,6 +207,13 @@ void ARSGMode()
   }
 }
 
+void BidirectionalControl()
+{
+  pot1 = map(analogRead(POT_1), 0, 1023, 2, 8); // Frequency
+  pot2 = map(analogRead(POT_2), 0, 1023, 500, 50); // Rising steps
+  pot3 = map(analogRead(POT_3), 0, 1023, 9000, 30000); // Delay next start
+}
+
 void BurstMode()
 {
   x++;
@@ -255,6 +237,13 @@ void BurstMode()
   }
 }
 
+void BurstControl()
+{
+  pot1 = map(analogRead(POT_1), 0, 1023, 20, 2); // Pulse count
+  pot2 = map(analogRead(POT_2), 0, 1023, 2, 10); // Pulse skip
+  pot3 = map(analogRead(POT_3), 0, 1023, 10, 100);  // Pulse delay
+}
+
 void StandartMode()
 {
   x++;
@@ -268,8 +257,42 @@ void StandartMode()
   }
 }
 
+void StandartControl()
+{
+  pot1 = map(analogRead(POT_1), 0, 1023, 2, 100); // Standart Mode pulse skip
+  pot2 = map(analogRead(POT_2), 0, 1023, 0, 9700); // Start pulse delay
+}
+
+int SelectMode()
+{
+  if(digitalRead(BTN_1))
+    return MODE_BIDIRECTIONAL;
+  else if (digitalRead(BTN_2))
+    return MODE_RISING;
+  else if (digitalRead(BTN_3))
+    return MODE_FALLING;
+  else if (digitalRead(BTN_4))
+    return MODE_BURST;
+  else
+    return MODE_STANDART;
+}
+
 void SetOutput(bool output)
 {
-  digitalWrite(OUTPUT_PIN, output);
-  digitalWrite(OUTPUT_LED, output); 
+  output ? PORTD |= (1 << PIND2) : PORTD &= ~(1 << PIND2);
+  output ? PORTB |= (1 << PINB5) : PORTB &= ~(1 << PINB5);
+}
+
+void SetupPins()
+{
+  pinMode(OUTPUT_PIN, OUTPUT);
+  pinMode(OUTPUT_LED, OUTPUT);
+  pinMode(INPUT_PIN, INPUT);
+  pinMode(POT_1, INPUT);
+  pinMode(POT_2, INPUT);
+  pinMode(POT_3, INPUT);
+  pinMode(BTN_1, INPUT);
+  pinMode(BTN_2, INPUT);
+  pinMode(BTN_3, INPUT);
+  pinMode(BTN_4, INPUT);
 }
